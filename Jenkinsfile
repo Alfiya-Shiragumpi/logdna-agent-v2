@@ -521,6 +521,7 @@ pipeline {
                             ) {
                                 sh 'ARCH=x86_64 make publish-image-ibm'
                                 sh 'ARCH=aarch64 make publish-image-ibm'
+                                sh 'ARCH=s390x make publish-image-ibm'
                                 sh 'make publish-image-multi-ibm'
                             }
                         }
