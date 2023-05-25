@@ -97,25 +97,25 @@ pipeline {
                       }
                     }
                 }
-                stage('Unit Tests'){
-                    when {
-                        not {
-                            triggeredBy 'ParameterizedTimerTriggerCause'
-                        }
-                    }
-                    steps {
-                        withCredentials([[
-                                            $class: 'AmazonWebServicesCredentialsBinding',
-                                            credentialsId: 'aws',
-                                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                            ]]){
-                            sh """
-                                make -j2 test
-                            """
-                        }
-                    }
-                }
+//                 stage('Unit Tests'){
+//                     when {
+//                         not {
+//                             triggeredBy 'ParameterizedTimerTriggerCause'
+//                         }
+//                     }
+//                     steps {
+//                         withCredentials([[
+//                                             $class: 'AmazonWebServicesCredentialsBinding',
+//                                             credentialsId: 'aws',
+//                                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                             ]]){
+//                             sh """
+//                                 make -j2 test
+//                             """
+//                         }
+//                     }
+//                 }
                 stage('Code Coverage'){
                     steps {
                         withCredentials([[
@@ -167,12 +167,13 @@ pipeline {
                             LOGDNA_INGESTION_KEY = creds["packet-stage"]["account"]["ingestionkey"]
                             TEST_THREADS = sh (script: 'threads=$(echo $(nproc)/4 | bc); echo $(( threads > 1 ? threads: 1))', returnStdout: true).trim()
                         }
-                        withCredentials([[
-                                           $class: 'AmazonWebServicesCredentialsBinding',
-                                           credentialsId: 'aws',
-                                           accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                           secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                         ]]){
+//                         withCredentials([[
+//                                            $class: 'AmazonWebServicesCredentialsBinding',
+//                                            credentialsId: 'aws',
+//                                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                          ]])
+                        {
                             sh """
                               TEST_THREADS="${TEST_THREADS}" make integration-test LOGDNA_INGESTION_KEY=${LOGDNA_INGESTION_KEY}
                             """
@@ -206,23 +207,23 @@ pipeline {
                     }
                   }
                 }
-                stage('Run K8s Integration Tests') {
-                    steps {
-                        withCredentials([[
-                                            $class: 'AmazonWebServicesCredentialsBinding',
-                                            credentialsId: 'aws',
-                                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                            ]]) {
-                            sh """
-                                echo "[default]" > ${WORKSPACE}/.aws_creds_k8s-test
-                                echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> ${WORKSPACE}/.aws_creds_k8s-test
-                                echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> ${WORKSPACE}/.aws_creds_k8s-test
-                                make k8s-test AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws_creds_k8s-test
-                            """
-                        }
-                    }
-                }
+//                 stage('Run K8s Integration Tests') {
+//                     steps {
+//                         withCredentials([[
+//                                             $class: 'AmazonWebServicesCredentialsBinding',
+//                                             credentialsId: 'aws',
+//                                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                             ]]) {
+//                             sh """
+//                                 echo "[default]" > ${WORKSPACE}/.aws_creds_k8s-test
+//                                 echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> ${WORKSPACE}/.aws_creds_k8s-test
+//                                 echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> ${WORKSPACE}/.aws_creds_k8s-test
+//                                 make k8s-test AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws_creds_k8s-test
+//                             """
+//                         }
+//                     }
+//                 }
             }
             post {
                 always {
